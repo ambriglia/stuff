@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <script>
+    var orbitalProps = "current distance from Sun | 1.004 au\n8.353 light minutes\nlargest distance from orbit center | 94.50913 million mi\n1.01671033 au\nnearest distance from orbit center | 91.402505 million mi\n0.98328989 au\norbital period | 365.25636 days";
+    var physicalProps = 'equatorial radius | 3963.2 mi\nmass | 5.9721986×10^24 kg\nrotation period | 23.934472 h (sidereal)\nnumber of moons | 1\nage | 4.54 billion yr';
+
+    function getProp(propName, properties) {
+      var splits = properties.split(propName);
+      return splits[1].split('|')[1].split('\n')[0];
+    }
+
+    var distance = getProp('largest distance from orbit center', orbitalProps);
+    var rotation = getProp('rotation period', physicalProps);
+    var orbital = getProp('orbital period', orbitalProps);
+
+    console.log(distance, rotation, orbital)
+
+    // AJAX call to API
+    var name = 'earth';
+    var queryURL = 'https://cors-anywhere.herokuapp.com/http://api.wolframalpha.com/v2/query?appid=4KQL5T-4RUJLAEV7L&input=planet%20'+name+'&output=json';
+
+    $.ajax({
+      url: queryURL,
+      method: 'GET'
+    }).then(function (response) {
+      var json = JSON.parse(response);
+      var pods = json.queryresult.pods;
+      for (let i = 0; i < pods.length; i++) {
+        if(pods[i].title === 'Orbital Properties') {
+          var something = getProp('largest distance from orbit center', pods[i].subpods[0].plaintext);
+        }
+      }
+    })
+  </script>
+
+</body>
+
+</html>

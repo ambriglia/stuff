@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="form-group">
+    <label>Search for a Senator (first last) i.e. "Nancy Pelosi"</label>
+    <input type="text" class="form-control" id="input-senator" placeholder="Enter a name here...">
+  </div>
+  <button type="submit" class="btn btn-primary" id="senator-button">Submit</button>
+  <br>
+  <div class="form-group">
+    <label>Search for a U.S. Representative</label>
+    <input type="text" class="form-control" id="input-senator" placeholder="Enter a name here...">
+  </div>
+  <button type="submit" class="btn btn-primary" id="rep-button">Submit</button>
+
+  <script>
+    $("#senator-button").on("click", function (event) {
+      event.preventDefault();
+
+      var senator = $('#input-senator').val();
+      var firstName = senator.split(' ')[0];
+      var lastName = senator.split(' ')[1];
+      console.log(firstName, lastName)
+
+      $.ajax({
+        url: "https://api.propublica.org/congress/v1/115/senate/members.json",
+        headers: {
+          "X-API-Key": "jfj2luRQdx0aboMuSrnMOFGg3lfHQBT0o7W0HJdr",
+        },
+        method: "GET"
+      }).then(function (response) {
+        console.log(response);
+        var members = response.results[0].members;
+        for (var i = 0; i < members.length; i++) {
+          if (firstName === members[i].first_name && lastName === members[i].last_name) {
+            var memberId = members[i].id;
+            var memberUrl = `https://api.propublica.org/congress/v1/members/${memberId}.json`;
+            $.ajax({
+              url: memberUrl,
+              method: 'GET',
+              headers: {
+                "X-API-Key": "jfj2luRQdx0aboMuSrnMOFGg3lfHQBT0o7W0HJdr",
+              }
+            }).then(function(memberResponse) {
+              console.log(memberResponse);
+            });
+          }
+        }
+        // https://api.propublica.org/congress/v1/members/{member-id}.json
+      });
+
+      $("#rep-button").on("click", function (event) {
+        event.preventDefault();
+        var rep = $(this).attr("data-name")
+
+        var queryURL = "https://api.propublica.org/campaign-finance/v1/"
+
+      });
+
+
+    });
+
+  </script>
+
+</body>
+
+</html>
